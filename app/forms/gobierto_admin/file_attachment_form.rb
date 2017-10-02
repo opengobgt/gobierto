@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GobiertoAdmin
   class FileAttachmentForm
     include ActiveModel::Model
@@ -12,7 +14,8 @@ module GobiertoAdmin
       :url,
       :collection,
       :name,
-      :description
+      :description,
+      :slug
     )
 
     delegate :persisted?, to: :file_attachment
@@ -68,11 +71,16 @@ module GobiertoAdmin
       @file_attachment = file_attachment.tap do |file_attachment_attributes|
         file_attachment_attributes.site = site
         file_attachment_attributes.name = if name.blank?
-                                            file.original_filename
+                                            if file
+                                              file.original_filename
+                                            else
+                                              file_attachment.name
+                                            end
                                           else
                                             name
                                           end
         file_attachment_attributes.description = description
+        file_attachment_attributes.slug = slug
       end
 
       if @file_attachment.valid?
@@ -91,7 +99,11 @@ module GobiertoAdmin
         file_attachment_attributes.site = site
         file_attachment_attributes.file_name = file.original_filename if file
         file_attachment_attributes.name = if name.blank?
-                                            file.original_filename
+                                            if file
+                                              file.original_filename
+                                            else
+                                              file_attachment.name
+                                            end
                                           else
                                             name
                                           end
@@ -99,6 +111,7 @@ module GobiertoAdmin
         file_attachment_attributes.file_digest = ::GobiertoAttachments::Attachment.file_digest(file) if file
         file_attachment_attributes.description = description
         file_attachment_attributes.url = url if url
+        file_attachment_attributes.slug = slug
       end
 
       if @file_attachment.valid?
@@ -113,7 +126,7 @@ module GobiertoAdmin
     end
 
     def collection
-      @collection ||= 'file_attachments'
+      @collection ||= "file_attachments"
     end
 
     protected

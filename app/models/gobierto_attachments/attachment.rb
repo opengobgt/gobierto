@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 require_dependency 'gobierto_attachments'
 
 module GobiertoAttachments
   class Attachment < ApplicationRecord
+    paginates_per 8
+
     include User::Subscribable
     include GobiertoCommon::Searchable
+    include GobiertoCommon::Sluggable
 
     MAX_FILE_SIZE_IN_BYTES = 10.megabytes
 
@@ -51,6 +56,16 @@ module GobiertoAttachments
       where(id: ids, site: site)
     end
 
+    def self.attachments_in_collections_and_container_type(site, container_type)
+      ids = GobiertoCommon::CollectionItem.where(item_type: "GobiertoAttachments::Attachment", container_type: container_type).pluck(:item_id)
+      where(id: ids, site: site)
+    end
+
+    def self.attachments_in_collections_and_container(site, container)
+      ids = GobiertoCommon::CollectionItem.where(item_type: "GobiertoAttachments::Attachment", container: container).pluck(:item_id)
+      where(id: ids, site: site)
+    end
+
     def self.file_digest(file)
       Digest::MD5.hexdigest(file.read)
     end
@@ -66,6 +81,22 @@ module GobiertoAttachments
     def created_at
       if versions.length > 0
         versions.last.created_at
+      end
+    end
+
+    def parameterize
+      { slug: slug }
+    end
+
+    def attributes_for_slug
+      [name]
+    end
+
+    def to_url(options = {})
+      if collection.container_type == "GobiertoParticipation::Process"
+        url_helpers.gobierto_participation_process_attachment_url(id: slug, process_id: collection.container.slug, host: app_host)
+      elsif collection.container_type == "GobiertoParticipation"
+        url_helpers.gobierto_participation_attachment_url(id: slug, host: app_host)
       end
     end
 

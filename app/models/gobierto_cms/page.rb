@@ -10,6 +10,7 @@ module GobiertoCms
     include GobiertoCommon::Searchable
     include GobiertoAttachments::Attachable
     include GobiertoCommon::ActsAsCollectionContainer
+    include GobiertoCommon::Sluggable
 
     algoliasearch_gobierto do
       attribute :site_id, :updated_at, :title_en, :title_es, :title_ca, :body_en, :body_es, :body_ca
@@ -49,7 +50,26 @@ module GobiertoCms
 
     def self.pages_in_collections_and_container_type(site, container_type)
       ids = GobiertoCommon::CollectionItem.where(item_type: "GobiertoCms::Page", container_type: container_type).pluck(:item_id)
+      where(id: ids, site: site).active
+    end
+
+    def self.pages_in_collections_and_container(site, container)
+      ids = GobiertoCommon::CollectionItem.where(item_type: "GobiertoCms::Page", container: container).pluck(:item_id)
       where(id: ids, site: site)
+    end
+
+    def attributes_for_slug
+      [title]
+    end
+
+    def to_url(options = {})
+      if collection.container_type == "GobiertoParticipation::Process"
+        url_helpers.gobierto_participation_process_page_url(parameterize.merge(id: slug, process_id: collection.container.slug, host: app_host).merge(options))
+      elsif collection.container_type == "GobiertoParticipation"
+        url_helpers.gobierto_participation_page_url(parameterize.merge(id: slug, host: app_host).merge(options))
+      else
+        url_helpers.gobierto_cms_page_url(parameterize.merge(host: app_host).merge(options))
+      end
     end
   end
 end

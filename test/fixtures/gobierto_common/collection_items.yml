@@ -33,6 +33,8 @@ news_collection_notice_2:
 
 ## Events collection items
 
+# richard_pending
+
 richard_pending_person:
   collection: richard_calendar
   item: richard_pending (GobiertoCalendars::Event)
@@ -47,6 +49,8 @@ richard_pending_site:
   collection: richard_calendar
   item: richard_pending (GobiertoCalendars::Event)
   container: madrid (Site)
+
+# richard_published
 
 richard_published_person:
   collection: richard_calendar
@@ -63,6 +67,8 @@ richard_published_site:
   item: richard_published (GobiertoCalendars::Event)
   container: madrid (Site)
 
+# richard_published_just_attending
+
 richard_published_just_attending_person:
   collection: richard_calendar
   item: richard_published_just_attending (GobiertoCalendars::Event)
@@ -77,6 +83,8 @@ richard_published_just_attending_site:
   collection: richard_calendar
   item: richard_published_just_attending (GobiertoCalendars::Event)
   container: madrid (Site)
+
+# richard_published_past
 
 richard_published_past_person:
   collection: richard_calendar
@@ -161,6 +169,8 @@ nelson_yesterday_fixed_site:
   item: nelson_yesterday_fixed (GobiertoCalendars::Event)
   container: madrid (Site)
 
+# tamara_published_past
+
 tamara_published_past_person:
   collection: tamara_calendar
   item: tamara_published_past (GobiertoCalendars::Event)
@@ -176,6 +186,8 @@ tamara_published_past_site:
   item: tamara_published_past (GobiertoCalendars::Event)
   container: madrid (Site)
 
+# reading_club
+
 reading_club_process:
   collection: gender_violence_process_calendar
   item: reading_club (GobiertoCalendars::Event)
@@ -190,6 +202,8 @@ reading_club_site:
   collection: gender_violence_process_calendar
   item: reading_club (GobiertoCalendars::Event)
   container: madrid (Site)
+
+# swimming_lessons
 
 swimming_lessons_process:
   collection: gender_violence_process_calendar

@@ -23,6 +23,10 @@ module GobiertoPeople
         @person ||= gobierto_people_people(:richard)
       end
 
+      def nelson
+        @nelson ||= gobierto_people_people(:nelson)
+      end
+
       def upcoming_events
         @upcoming_events ||= [
           gobierto_calendars_events(:richard_published)
@@ -149,35 +153,32 @@ module GobiertoPeople
       end
 
       def test_filter_events_by_calendar_date_link
-        past_event   = gobierto_calendars_events(:richard_published_past)
-        future_event = gobierto_calendars_events(:richard_published_just_attending)
+        yesterday_event = gobierto_calendars_events(:nelson_yesterday_fixed)
+        tomorrow_event  = gobierto_calendars_events(:nelson_tomorrow_fixed)
 
-        with_javascript do
-          with_current_site(site) do
-            visit gobierto_people_person_events_path(person.slug)
+        Timecop.freeze(Time.zone.parse("2014-04-15")) do
+          with_javascript do
 
-            sleep 1
+            with_current_site(site) do
+              visit gobierto_people_person_events_path(nelson.slug)
 
-            click_button 'List'
-            
-            sleep 1
+              click_button 'List'
+              
+              within ".events-summary" do
+                refute has_content?(yesterday_event.title)
+                assert has_content?(tomorrow_event.title)
+              end
 
-            within ".events-summary" do
-              refute has_content?(past_event.title)
-              assert has_content?(future_event.title)
-            end
+              within ".calendar-component" do
+                click_link yesterday_event.starts_at.day
+              end
 
-            within ".calendar-component" do
-              click_link past_event.starts_at.day
-            end
+              assert has_content? "Displaying events of #{yesterday_event.starts_at.strftime("%b %d %Y")}"
 
-            sleep 1
-            
-            assert has_content? "Displaying events of #{past_event.starts_at.strftime("%b %d %Y")}"
-
-            within ".events-summary" do
-              assert has_content?(past_event.title)
-              refute has_content?(future_event.title)
+              within ".events-summary" do
+                assert has_content?(yesterday_event.title)
+                refute has_content?(tomorrow_event.title)
+              end
             end
           end
         end

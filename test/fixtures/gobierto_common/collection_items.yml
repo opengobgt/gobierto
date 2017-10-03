@@ -93,6 +93,8 @@ richard_published_past_site:
   item: richard_published_past (GobiertoCalendars::Event)
   container: madrid (Site)
 
+# nelson_tomorrow
+
 nelson_tomorrow_person:
   collection: nelson_calendar
   item: nelson_tomorrow (GobiertoCalendars::Event)
@@ -108,6 +110,25 @@ nelson_tomorrow_site:
   item: nelson_tomorrow (GobiertoCalendars::Event)
   container: madrid (Site)
 
+# nelson_tomorrow_fixed
+
+nelson_tomorrow_fixed_person:
+  collection: nelson_calendar
+  item: nelson_tomorrow_fixed (GobiertoCalendars::Event)
+  container: nelson (GobiertoPeople::Person)
+
+nelson_tomorrow_fixed_people:
+  collection: nelson_calendar
+  item: nelson_tomorrow_fixed (GobiertoCalendars::Event)
+  container_type: GobiertoPeople
+
+nelson_tomorrow_fixed_site:
+  collection: nelson_calendar
+  item: nelson_tomorrow_fixed (GobiertoCalendars::Event)
+  container: madrid (Site)
+
+# nelson_yesterday
+
 nelson_yesterday_person:
   collection: nelson_calendar
   item: nelson_yesterday (GobiertoCalendars::Event)
@@ -121,6 +142,23 @@ nelson_yesterday_people:
 nelson_yesterday_site:
   collection: nelson_calendar
   item: nelson_yesterday (GobiertoCalendars::Event)
+  container: madrid (Site)
+
+# nelson_yesterday_fixed
+
+nelson_yesterday_fixed_person:
+  collection: nelson_calendar
+  item: nelson_yesterday_fixed (GobiertoCalendars::Event)
+  container: nelson (GobiertoPeople::Person)
+
+nelson_yesterday_fixed_people:
+  collection: nelson_calendar
+  item: nelson_yesterday_fixed (GobiertoCalendars::Event)
+  container_type: GobiertoPeople
+
+nelson_yesterday_fixed_site:
+  collection: nelson_calendar
+  item: nelson_yesterday_fixed (GobiertoCalendars::Event)
   container: madrid (Site)
 
 tamara_published_past_person:

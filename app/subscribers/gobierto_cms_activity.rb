@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Subscribers
-  class GobiertoCalendarsActivity < ::Subscribers::Base
+  class GobiertoCmsActivity < ::Subscribers::Base
     def updated(event)
       create_activity_from_event(event, 'updated')
     end
@@ -10,15 +10,11 @@ module Subscribers
       create_activity_from_event(event, 'published')
     end
 
-    def state_changed(event)
-      create_activity_from_event(event, 'published')
-    end
-
     private
 
     def create_activity_from_event(event, action)
       subject = GlobalID::Locator.locate event.payload[:gid]
-      return unless subject.class.parent == GobiertoCalendars
+      return unless subject.class.parent == GobiertoCms
       author = GobiertoAdmin::Admin.find_by id: event.payload[:admin_id]
       # When the author is nil, we can asume the action has been performed by an integration
       return if author.nil?

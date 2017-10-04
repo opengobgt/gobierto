@@ -4,7 +4,7 @@ require 'test_helper'
 
 module GobiertoAdmin
   class DeleteIssueTest < ActionDispatch::IntegrationTest
-    
+
     def setup
       super
       @path = admin_issues_path
@@ -23,7 +23,7 @@ module GobiertoAdmin
     end
 
     def test_delete_issue
-      issue.collection_items.destroy_all
+      issue.processes.update_all(issue_id: nil)
 
       with_signed_in_admin(admin) do
         with_current_site(site) do

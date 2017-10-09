@@ -96,7 +96,7 @@ module GobiertoParticipation
 
         within "menu.secondary_nav" do
           assert has_link? "News"
-          assert has_link? "Diary"
+          assert has_link? "Participation Agenda"
           assert has_link? "Documents"
           assert has_link? "Activity"
         end
@@ -178,7 +178,7 @@ module GobiertoParticipation
         with_current_site(site) do
           visit container_path
 
-          page.find('[data-url="/participacion/procesos/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
+          page.find('[data-url="/participacion/p/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
           assert has_content? "Carril bici hasta el Juan Carlos I"
         end
       end
@@ -190,7 +190,7 @@ module GobiertoParticipation
           with_signed_in_user(user) do
             visit container_path
 
-            page.find('[data-url="/participacion/procesos/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
+            page.find('[data-url="/participacion/p/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
             assert has_content? "Carril bici para que los niños puedan llegar al parque desde cualquier punto de Barajas."
             assert has_content? "It values the idea"
             page.find("a.action_button.love").trigger("click")
@@ -206,7 +206,7 @@ module GobiertoParticipation
           with_signed_in_user(user) do
             visit container_path
 
-            page.find('[data-url="/participacion/procesos/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
+            page.find('[data-url="/participacion/p/ciudad-deportiva/contribution_containers/children-contributions/contributions/carril-bici"]', visible: false).trigger("click")
             assert has_content? "Carril bici para que los niños puedan llegar al parque desde cualquier punto de Barajas."
 
             within "div.comments_container" do

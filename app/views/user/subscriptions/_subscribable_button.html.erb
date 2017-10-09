@@ -1,0 +1,28 @@
+<% user_subscription_form = User::SubscriptionForm.new(subscribable: subscribable) %>
+<% subscribed = user_signed_in? ? current_user.subscribed_to?(subscribable, current_site) : false %>
+
+<% if user_signed_in? %>
+  <%= button_to(
+    user_subscriptions_path,
+    params: {
+      user_subscription: {
+        subscribable_type: user_subscription_form.subscribable_type,
+        subscribable_id: user_subscription_form.subscribable_id
+      }
+    },
+    class: "button outline rounded desktop_only follow_process #{'checked' if subscribed}") do %>
+    <% if subscribed %>
+      <i class="fa fa-star"></i>
+    <% else %>
+      <i class="fa fa-rss"></i>
+    <% end %>
+    <%= subscribed ? t(".#{subscribable.class.name.demodulize.downcase}_followed") : t(".follow_#{subscribable.class.name.demodulize.downcase}") %>
+  <% end %>
+<% else %>
+  <%= link_to(
+    new_user_sessions_path(open_modal: true),
+    class: "button outline rounded desktop_only open_remote_modal") do %>
+      <i class="fa fa-rss"></i>
+    <%= t(".follow_#{subscribable.class.name.demodulize.downcase}") %>
+  <% end %>
+<% end %>

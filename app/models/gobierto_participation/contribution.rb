@@ -37,6 +37,10 @@ module GobiertoParticipation
       where(id: ids)
     end
 
+    def active?
+      true
+    end
+
     def parameterize
       { slug: slug }
     end

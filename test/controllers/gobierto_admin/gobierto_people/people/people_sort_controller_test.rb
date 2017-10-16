@@ -6,6 +6,7 @@ module GobiertoAdmin
   module GobiertoPeople
     module People
       class PeopleSortControllerTest < GobiertoControllerTest
+
         def admin
           @admin ||= gobierto_admin_admins(:natasha)
         end
@@ -49,6 +50,7 @@ module GobiertoAdmin
           assert_equal 1, person2.position
           assert_equal 2, person1.position
         end
+
       end
     end
   end

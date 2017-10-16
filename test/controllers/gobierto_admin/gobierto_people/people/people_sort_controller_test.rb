@@ -7,7 +7,7 @@ module GobiertoAdmin
     module People
       class PeopleSortControllerTest < GobiertoControllerTest
         def admin
-          @admin ||= gobierto_admin_admins(:tony)
+          @admin ||= gobierto_admin_admins(:natasha)
         end
 
         def person1

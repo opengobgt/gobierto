@@ -3,10 +3,15 @@ module GobiertoAdmin
     class PersonCalendarConfigurationForm
       include ActiveModel::Model
 
+      ENCRYPTED_SETTING_PLACEHOLDER = 'encrypted_setting_placeholder'
+
       attr_accessor(
         :person_id,
         :ibm_notes_url,
-        :microsoft_exchange_email,
+        :microsoft_exchange_usr,
+        :microsoft_exchange_pwd,
+        :microsoft_exchange_url,
+        :clear_microsoft_exchange_configuration,
         :clear_google_calendar_configuration,
         :calendars
       )
@@ -29,10 +34,30 @@ module GobiertoAdmin
                            end
       end
 
-      def microsoft_exchange_email
-        @microsoft_exchange_email ||= if person_calendar_configuration.respond_to?(:microsoft_exchange_email)
-                             person_calendar_configuration.microsoft_exchange_email
-                           end
+      def microsoft_exchange_usr
+        @microsoft_exchange_usr ||= if person_calendar_configuration.respond_to?(:microsoft_exchange_usr)
+                                      person_calendar_configuration.microsoft_exchange_usr
+                                    end
+      end
+
+      def microsoft_exchange_pwd
+        @microsoft_exchange_pwd ||= if person_calendar_configuration.respond_to?(:microsoft_exchange_pwd)
+                                      person_calendar_configuration.microsoft_exchange_pwd
+                                    end
+      end
+
+      def microsoft_exchange_url
+        @microsoft_exchange_url ||= if person_calendar_configuration.respond_to?(:microsoft_exchange_url)
+                                      person_calendar_configuration.microsoft_exchange_url
+                                    end
+      end
+
+      def dummy_microsoft_exchange_pwd
+        if microsoft_exchange_pwd.present? && microsoft_exchange_pwd != ENCRYPTED_SETTING_PLACEHOLDER
+          ENCRYPTED_SETTING_PLACEHOLDER
+        else
+          microsoft_exchange_pwd
+        end
       end
 
       def calendars
@@ -75,6 +100,10 @@ module GobiertoAdmin
         person_ibm_notes_configuration_class == person_calendar_configuration.class && ibm_notes_url.blank?
       end
 
+      def clear_microsoft_exchange_configuration?
+        person_microsoft_exchange_configuration_class == person_calendar_configuration.class && clear_microsoft_exchange_configuration == "1"
+      end
+
       def save_calendar_configuration
         @person_calendar_configuration = person_calendar_configuration.tap do |calendar_configuration_attributes|
           calendar_configuration_attributes.person_id = person_id
@@ -87,13 +116,21 @@ module GobiertoAdmin
             calendar_configuration_attributes.endpoint = ibm_notes_url
           end
 
-          if calendar_configuration_attributes.respond_to?(:microsoft_exchange_email)
-            calendar_configuration_attributes.microsoft_exchange_email = microsoft_exchange_email
+          if calendar_configuration_attributes.respond_to?(:microsoft_exchange_usr)
+            calendar_configuration_attributes.microsoft_exchange_usr = microsoft_exchange_usr
+          end
+
+          if calendar_configuration_attributes.respond_to?(:microsoft_exchange_pwd)
+            calendar_configuration_attributes.microsoft_exchange_pwd = encrypted_microsoft_exchange_pwd
+          end
+
+          if calendar_configuration_attributes.respond_to?(:microsoft_exchange_url)
+            calendar_configuration_attributes.microsoft_exchange_url = microsoft_exchange_url
           end
         end
 
         if @person_calendar_configuration.valid?
-          if clear_google_calendar_configuration? || clear_ibm_notes_configuration?
+          if clear_google_calendar_configuration? || clear_ibm_notes_configuration? || clear_microsoft_exchange_configuration?
             ::GobiertoPeople::ClearImportedPersonEventsJob.perform_later(person)
 
             @person_calendar_configuration.destroy
@@ -118,6 +155,19 @@ module GobiertoAdmin
           errors.add(attribute, message)
         end
       end
+
+      private
+
+      def encrypted_microsoft_exchange_pwd
+        if microsoft_exchange_pwd.present? && microsoft_exchange_pwd != ENCRYPTED_SETTING_PLACEHOLDER
+          ::SecretAttribute.encrypt(microsoft_exchange_pwd)
+        elsif microsoft_exchange_pwd == ENCRYPTED_SETTING_PLACEHOLDER
+          person_calendar_configuration.microsoft_exchange_pwd
+        else
+          nil
+        end
+      end
+
     end
   end
 end

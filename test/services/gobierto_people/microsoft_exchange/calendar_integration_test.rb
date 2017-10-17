@@ -17,8 +17,12 @@ module GobiertoPeople
         @site ||= sites(:madrid)
       end
 
-      def microsoft_exchange_email
-        'richard@microsoft-exchange.com'
+      def microsoft_exchange_settings
+        @microsoft_exchange_settings ||= {
+          microsoft_exchange_url: 'http://example.com/ews/exchange.asmx',
+          microsoft_exchange_usr: 'richard-me-username',
+          microsoft_exchange_pwd: 'richard-me-password'
+        }
       end
 
       def setup_mocks_for_synchronization(canned_responses)
@@ -32,11 +36,16 @@ module GobiertoPeople
           mock_event_items << event_item
         end
 
-        # mock folder
-        folder = mock
-        folder.stubs(:expanded_items).returns(mock_event_items)
+        # mock target folder
+        target_folder = mock
+        target_folder.stubs(:expanded_items).returns(mock_event_items)
+        target_folder.stubs(:display_name).returns(CalendarIntegration::TARGET_CALENDAR_NAME)
 
-        Exchanger::Folder.stubs(:find).returns(folder)
+        # mock root folder
+        root_folder = mock
+        root_folder.stubs(:folders).returns([target_folder])
+
+        Exchanger::Folder.stubs(:find).returns(root_folder)
       end
 
       def setup
@@ -44,7 +53,7 @@ module GobiertoPeople
 
         # configure site and person
         activate_microsoft_exchange_calendar_integration(sites(:madrid))
-        set_microsoft_exchange_email_account(richard, microsoft_exchange_email)
+        configure_microsoft_exchange_integration(richard, microsoft_exchange_settings.merge(encrypt: true))
       end
 
       def event_attributes
@@ -81,7 +90,7 @@ module GobiertoPeople
       end
 
       def test_sync_events_updates_event_attributes
-        
+
         setup_mocks_for_synchronization([event_attributes])
         CalendarIntegration.sync_person_events(richard)
 
@@ -91,7 +100,7 @@ module GobiertoPeople
           subject: 'Updated event',
           location: 'Updated location'
         )
-        
+
         setup_mocks_for_synchronization([event_1])
         CalendarIntegration.sync_person_events(richard)
 
@@ -113,9 +122,9 @@ module GobiertoPeople
 
         setup_mocks_for_synchronization([event_1, event_2])
         CalendarIntegration.sync_person_events(richard)
-        
+
         event = richard.events.find_by(external_id: 'external-id-1')
-        
+
         assert event.published?
 
         # sync, only receiving the second event
@@ -124,13 +133,13 @@ module GobiertoPeople
         CalendarIntegration.sync_person_events(richard)
 
         # check first event is unpublished
-        
+
         event.reload
         refute event.published?
       end
 
       def test_sync_events_removes_deleted_locations
-        
+
         # syncrhonize event with location
 
         setup_mocks_for_synchronization([event_attributes])

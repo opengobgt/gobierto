@@ -67,10 +67,11 @@ $(document).on('turbolinks:load', function() {
       content.results.forEach(function(indexResults){
         indexResults.hits.forEach(function(d){
 
+          // Search in back with only one index
           if(window.searchClient.indexes.length == 1) {
             var result = '<div class="activity_item">' +
               '<h2>' + '<a class="tipsit" href=' + ["/admin/cms/pages/", d['objectID'], "/edit?collection_id=", d['collection_id']].join('') +
-              ' original-title="Arrastra y suelta en la parte izquierda para colocar esta página en el menú">' +
+              ' original-title="' + I18n.t("layouts.search.drag_drop_instructions") + '">' +
               (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) +
               '<span class="secondary">' + itemDescription(d) + '</span>'  +
               '</a>' + '</h2>' +
@@ -96,7 +97,10 @@ $(document).on('turbolinks:load', function() {
       $('<div class="result"><p>'+I18n.t("layouts.search.no_results")+'</p></div>').appendTo($resultsContainer);
     }
 
-    $('<div class="result"><small>'+I18n.t("layouts.search.powered_by")+'</small></div>').appendTo($resultsContainer);
+    // Search in front
+    if(window.searchClient.indexes.length > 1) {
+      $('<div class="result"><small>'+I18n.t("layouts.search.powered_by")+'</small></div>').appendTo($resultsContainer);
+    }
   }
 
   $input.on('keyup', function(e){

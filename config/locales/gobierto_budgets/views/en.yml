@@ -29,7 +29,14 @@ en:
         budget_line_percentage: Percentage
         budget_line_value: Amount
         budget_lines_distribution: Expense budget lines distribution
+        enough_information: Enough information?
+        enough_information_cta: Ask your municipality
+        enough_information_desc: If you think it's necessary to include more information
+          about this budget line or about the usage of your taxes ask your municipality
         evolution: Evolution
+        give_your_opinion: Give your opinion about this budget line
+        give_your_opinion_cta: Do you understand this budget line? Do you think it's
+          enough, too much? Give your opinion
         last_year: Last year
         no_description: There's no description for this budget line.
         no_distribution: There aren't any related budget lines.
@@ -38,6 +45,7 @@ en:
         percentage: "% over the total"
         planned: planned
         planned_per_inhabitant: plan. / inh.
+        raise_hand: Raise your hand
         real_value: Real %{kind} is %{value}
         real_vs_planned: real vs. plan.
         sub_budget_lines: In this budget line

@@ -52,7 +52,46 @@ $(document).on('turbolinks:load', function() {
     }
   }
 
-  function searchCallback(err, content) {
+  function searchFrontCallback(err, content) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    $resultsContainer.html('');
+    var sum = 0;
+    content.results.forEach(function(indexResults){
+      sum += indexResults.nbHits;
+    });
+
+    if(sum > 0) {
+      content.results.forEach(function(indexResults){
+        indexResults.hits.forEach(function(d){
+
+          var result = '<a class="result" <a href="' + d.resource_path + '">' +
+            '<h2>' + (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) + '</h2>' +
+            '<div class="description">' +
+              '<div>' + itemDescription(d) + '</div>' +
+              '<span class="soft item_type">' + itemType(d) + '</span>' +
+              (itemUpdatedAt(d) ? ' · <span class="soft updated_at">' + itemUpdatedAt(d) + '</span>' : '') +
+            '</div>' +
+          '</a>';
+
+          var div = $(result);
+          div.appendTo($resultsContainer);
+        });
+      });
+      rebindAll();
+    } else {
+      $('<div class="result"><p>'+I18n.t("layouts.search.no_results")+'</p></div>').appendTo($resultsContainer);
+    }
+
+    if(window.searchClient.indexes.length > 1) {
+      $('<div class="result"><small>'+I18n.t("layouts.search.powered_by")+'</small></div>').appendTo($resultsContainer);
+    }
+  }
+
+  function searchBackCallback(err, content) {
     if (err) {
       console.error(err);
       return;
@@ -67,39 +106,28 @@ $(document).on('turbolinks:load', function() {
       content.results.forEach(function(indexResults){
         indexResults.hits.forEach(function(d){
 
-          // Search in back with only one index
-          if(window.searchClient.indexes.length == 1) {
-            var result = '<div class="activity_item">' +
-              '<h2>' + '<a class="tipsit" href=' + ["/admin/cms/pages/", d['objectID'], "/edit?collection_id=", d['collection_id']].join('') +
-              ' original-title="' + I18n.t("layouts.search.drag_drop_instructions") + '">' +
-              (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) +
-              '<span class="secondary">' + itemDescription(d) + '</span>'  +
-              '</a>' + '</h2>' +
-              '<div class="date">' + itemUpdatedAt(d) + '</div>' +
-            '</div>';
-          } else {
-            var result = '<a class="result" <a href="' + d.resource_path + '">' +
-              '<h2>' + (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) + '</h2>' +
-              '<div class="description">' +
-                '<div>' + itemDescription(d) + '</div>' +
-                '<span class="soft item_type">' + itemType(d) + '</span>' +
-                (itemUpdatedAt(d) ? ' · <span class="soft updated_at">' + itemUpdatedAt(d) + '</span>' : '') +
-              '</div>' +
-            '</a>';
-          }
+
+          var result = '<div class="activity_item">' +
+            '<h2>' + '<a class="tipsit" href=' + ["/admin/cms/pages/", d['objectID'], "/edit?collection_id=", d['collection_id']].join('') +
+            ' original-title="' + I18n.t("layouts.search.drag_drop_instructions") + '"' +
+            'data-title="' + (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) + '"' +
+            'data-id=' + d['objectID'] + '>' +
+            (d['title'] || d['name'] || d['title_' + I18n.locale] || d['name_' + I18n.locale]) +
+            '<span class="secondary">' + itemDescription(d) + '</span>'  +
+            '</a>' + '</h2>' +
+            '<div class="date">' + itemUpdatedAt(d) + '</div>' +
+          '</div>';
 
           var div = $(result);
           div.appendTo($resultsContainer);
         });
       });
+
+      // After reload partial with pages we have to do pages like draggable
+      $(".tipsit").draggable({ revert: true });
       rebindAll();
     } else {
       $('<div class="result"><p>'+I18n.t("layouts.search.no_results")+'</p></div>').appendTo($resultsContainer);
-    }
-
-    // Search in front
-    if(window.searchClient.indexes.length > 1) {
-      $('<div class="result"><small>'+I18n.t("layouts.search.powered_by")+'</small></div>').appendTo($resultsContainer);
     }
   }
 
@@ -116,11 +144,12 @@ $(document).on('turbolinks:load', function() {
         }
       });
     });
-    if(q.length > 2){
-      window.searchClient.client.search(queries, searchCallback);
+
+    if(window.location.href.includes("admin")) {
+      window.searchClient.client.search(queries, searchBackCallback);
     } else {
-      if(window.location.href.includes("admin")) {
-        window.searchClient.client.search(queries, searchCallback);
+      if(q.length > 2){
+        window.searchClient.client.search(queries, searchFrontCallback);
       } else {
         $resultsContainer.html('');
       }
@@ -134,7 +163,9 @@ $(document).on('turbolinks:load', function() {
   // Hide resultsContainer if clicked outside the search input and results
   $('body').click(function(e) {
     if ( !$(e.target).is('#search_results *') && !$(e.target).is('input#gobierto_search') ) {
-      $resultsContainer.hide();
+      if(!(window.location.href.includes("admin"))) {
+        $resultsContainer.hide();
+      }
     }
   });
 });

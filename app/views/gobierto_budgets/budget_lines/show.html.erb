@@ -53,6 +53,14 @@
 <div class="column">
   <div class="budget_line">
 
+    <% if in_elaboration? %>
+      <div class="pure-u-1-1 metric_box">
+        <div class="highlight-proposal">
+          <p><span>&#9632;</span><%= t('gobierto_budgets.budgets_elaboration.index.next_year_proposal', year: @year) %></p>
+        </div>
+      </div>
+    <% end %>
+
     <header>
       <h1><%= title @budget_line.name %></h1>
     </header>
@@ -73,24 +81,26 @@
         </div>
       </div>
 
-      <% planned_executed = @budget_line_stats.percentage_difference(variable1: :amount_executed, variable2: :amount_planned, year: @year) %>
-      <div class="pure-u-1-2 pure-u-md-1-5 metric_box">
-        <div class="inner">
-          <h3><%= kind_literal(@kind, false).capitalize %> <%= t('.real_vs_planned') %></h3>
-          <% if planned_executed %>
-            <div class="metric"><%= planned_executed %></div>
-            <div class="explanation">
-              <%= t('.real_value', kind: kind_literal(@kind, false), value: format_currency(@budget_line_stats.amount_executed)) %>
-            </div>
-          <% else %>
-            <% planned_executed = @budget_line_stats.percentage_difference(variable1: :amount_executed, variable2: :amount_planned, year: @year-1) %>
-            <div class="metric"><span class="not_av"><%= t('.not_available') %></span></div>
-            <div class="explanation">
-              <%= t('.last_year', year: @year - 1, value: planned_executed) %>
-            </div>
-          <% end %>
+      <% unless in_elaboration? %>
+        <% planned_executed = @budget_line_stats.percentage_difference(variable1: :amount_executed, variable2: :amount_planned, year: @year) %>
+        <div class="pure-u-1-2 pure-u-md-1-5 metric_box">
+          <div class="inner">
+            <h3><%= kind_literal(@kind, false).capitalize %> <%= t('.real_vs_planned') %></h3>
+            <% if planned_executed %>
+              <div class="metric"><%= planned_executed %></div>
+              <div class="explanation">
+                <%= t('.real_value', kind: kind_literal(@kind, false), value: format_currency(@budget_line_stats.amount_executed)) %>
+              </div>
+            <% else %>
+              <% planned_executed = @budget_line_stats.percentage_difference(variable1: :amount_executed, variable2: :amount_planned, year: @year-1) %>
+              <div class="metric"><span class="not_av"><%= t('.not_available') %></span></div>
+              <div class="explanation">
+                <%= t('.last_year', year: @year - 1, value: planned_executed) %>
+              </div>
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
 
       <div class="pure-u-1-2 pure-u-md-1-5 metric_box">
         <div class="inner">
@@ -105,7 +115,23 @@
           <div class="metric"><%= format_currency @budget_line_stats.mean_province %></div>
         </div>
       </div>
+
+      <% if in_elaboration? %>
+        <div class="pure-u-1-2 pure-u-md-1-5 metric_box cta open_budget_line_feedback tipsit" title="¿Entiendes de qué va esta partida? ¿Te parece mucho, poco? Opina">
+          <div class="inner">
+            <%= link_to gobierto_budgets_feedback_step1_path(year: @year, id: @budget_line.id), remote: true do %>
+              <div class="main">Levanta la mano <i class="fa fa-hand-paper-o"></i></div>
+              <div class="lite">Opina sobre esta partida</div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
+
+    <% if in_elaboration? %>
+      <div class="block budget_line_feedback raise_your_hand_content" id="feedback-container">
+      </div>
+    <% end %>
 
     <div class="pure-g block">
 
@@ -195,5 +221,106 @@
         </div>
       </div>
     </div>
+
+    <% if in_elaboration? %>
+      <div class="budget_line_feedback ask_your_entity">
+
+        <div class="inner">
+
+          <h3>¿Suficiente información?</h3>
+
+          <p>Si considera que s’ha d'incloure més informació d'aquesta partida per tenir una visió més complerta de la mateixa o sobre l’ús dels teus impostos, comuniqui-ho i li contestarem</p>
+
+          <a href="" class="button open_ask_your_entity_form">Pide a tu Ayuntamiento</a>
+
+          <div class="ask_your_entity_form">
+
+            <div class="slim_box">
+              <form id="new-user-login-share" class="new_user" accept-charset="UTF-8" method="post">
+                <div class="sep"></div>
+                <p>Dejanos tu correo-e y te avisamos</p>
+                <input placeholder="Tu correo-e" type="email" name="user[email]" id="user_email">
+                <input type="hidden" name="context" id="context" value="new-user-login-share">
+                <input type="submit" name="commit" value="Enviar">
+                <p class="small">[AVISO DINAMICO PRIVACIDAD]</p>
+              </form>
+            </div>
+
+          </div>
+
+          <div class="share_post_submit">
+
+            <div class="sep"></div>
+
+            <p><small>Genial! Comprueba tu correo y pincha en el enlace que te enviamos</small></p>
+
+            <p>
+              ¿Quieres compartir esta estadística en
+              <!-- Texto para share:
+                Informate y opina sobre el presupuesto de MUNICIPIO URL_PARTIDA
+              -->
+              <a class="small_button popup" data-rel="Twitter" href="https://twitter.com/home?status=En%20%40gobierto%3A%20%C2%BFQu%C3%A9%20opina%20la%20gente%20sobre%20la%20partida%20Servicios%20p%C3%BAblicos%20b%C3%A1sicos%20de%20Santander%3F%20https%3A%2F%2Fpresupuestos.gobierto.es%2Fbudget_lines%2Fsantander%2F2017%2F1%2FG%2Ffunctional%2Ffeedback%2F1">Twitter</a>
+              <a class="small_button popup" data-rel="Facebook" href="http://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fpresupuestos.gobierto.es%2Fbudget_lines%2Fsantander%2F2017%2F1%2FG%2Ffunctional%2Ffeedback%2F1">Facebook</a>
+              ?
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+    <% end %>
   </div>
 </div>
+
+
+<script type="text/javascript">
+
+$(document).on('turbolinks:load', function() {
+
+  // ToDo: Integrate this code
+  $('.raise_your_hand_content, .blf_question_2, .reply, .share_post_submit, .ask_your_entity_form').hide();
+
+  $('.open_budget_line_feedback').on('click', function(e){
+    e.preventDefault();
+    $('.highlight-proposal').velocity('scroll', { offset: -75});
+    // $('.budget_line_feedback').show();
+    $('.budget_line_feedback').velocity("transition.slideDownIn");
+  });
+
+  $('.open_blf_question_2').on('click', function(e){
+    e.preventDefault();
+    // $('.blf_question_2').show();
+    $('.blf_question_2').velocity("transition.slideDownIn");
+  });
+
+  $('.open_reply_yes').on('click', function(e){
+    e.preventDefault();
+    $('.reply_yes').show();
+    // $('.reply').velocity("transition.slideDownIn");
+    $('.reply_yes').velocity('scroll', { offset: -75});
+  });
+
+  $('.open_reply_no').on('click', function(e){
+    e.preventDefault();
+    $('.reply_no').show();
+    $('.reply_no').velocity('scroll', { offset: -75});
+  });
+
+  $('form input[type=submit]').on('click', function(e){
+    e.preventDefault();
+
+    // $('.slim_box').velocity("transition.slideUpOut");
+    $('.share_post_submit').velocity("transition.slideDownIn");
+    // $('.reply_no').velocity('scroll', { offset: -75});
+  });
+
+  $('.open_ask_your_entity_form').on('click', function(e){
+    e.preventDefault();
+
+    $('.ask_your_entity_form').velocity("transition.slideDownIn");
+  });
+
+});
+
+</script>

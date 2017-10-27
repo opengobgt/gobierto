@@ -54,6 +54,7 @@ es:
           para el %{year}'
         twitter_text_income: 'En @gobierto: Ingreso municipal de %{name} en %{budget_line_name}
           para el %{year}'
+        vs_previous_year: vs. ejercicio anterior
     budgets:
       guide:
         budget_execution: La ejecución presupuestaria
@@ -354,9 +355,11 @@ es:
           preveer todos los gastos con precisión absoluta.
         execution_help: La ejecución es la cantidad que finalmente se ha gastado sobre
           lo presupuestado inicialmente.
+        expenses_planned: Gastos presupuestados
         functional: Functional
         functional_button: En qué se gasta
         higher_execution: Mayor ejecución
+        income_planned: Ingresos presupuestados
         last_update: Última actualización
         lower_execution: Menor ejecución
         metric:
@@ -365,6 +368,8 @@ es:
             income_title: Ejecución de ingresos
             previous_execution_message: En el %{year} la ejecución fue del %{percentage}
         percentage: Porcentaje
+        real_expenses: Gastos reales
+        real_income: Ingresos reales
         sort: Ordenar
         title: Ejecución presupuestaria
         tooltip_disclaimer: "<strong>Esta es una aproximación</strong>. <br /> A lo

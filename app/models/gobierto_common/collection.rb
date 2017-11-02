@@ -10,8 +10,6 @@ module GobiertoCommon
     translates :title
 
     validates :site, :title, :item_type, presence: true
-    validates :container, presence: true, associated: true
-    validates_associated :container
     validates :slug, uniqueness: { scope: :site }
 
     attr_reader :container
@@ -33,6 +31,8 @@ module GobiertoCommon
     def container
       if container_id.present?
         super
+      else
+        container_type.constantize
       end
     end
 
@@ -50,7 +50,8 @@ module GobiertoCommon
 
     def self.type_classes(item_type)
       if item_type == "Page"
-        [[::GobiertoCms::Page.model_name.human, ::GobiertoCms::Page.name]]
+        [[::GobiertoCms::Page.model_name.human, ::GobiertoCms::Page.name],
+         [I18n.t('activerecord.models.gobierto_cms/new'), "GobiertoCms::New"]]
       elsif item_type == "Attachment"
         [[::GobiertoAttachments::Attachment.model_name.human, ::GobiertoAttachments::Attachment.name]]
       elsif item_type == "Event"
@@ -120,7 +121,7 @@ module GobiertoCommon
     end
 
     def gobierto_module_instance_for_container(container)
-      if !container_is_a_collector?(container)
+      if !container.is_a?(Module) && !container_is_a_collector?(container)
         [container.class.name, container.id]
       end
     end

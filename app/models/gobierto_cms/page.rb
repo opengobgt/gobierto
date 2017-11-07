@@ -46,25 +46,26 @@ module GobiertoCms
     end
 
     def process
-      GobiertoCommon::CollectionItem.where(item: self, container_type: "GobiertoParticipation::Process").first.container
+      GobiertoCommon::CollectionItem.where(item_id: id, item_type: %W(GobiertoCms::News GobiertoCms::Page), container_type: "GobiertoParticipation::Process").first.container
     end
 
     def template
       collection.item_type.split('::').last.downcase
     end
 
+    # TODO: split methods to fetch news or pages
     def self.pages_in_collections(site)
-      ids = GobiertoCommon::CollectionItem.includes(:collection).where("collections.item_type = 'GobiertoCms::New' AND collection_items.item_type = ? ", self.name).pluck(:item_id)
+      ids = GobiertoCommon::CollectionItem.where(item_type: %W(GobiertoCms::News GobiertoCms::Page)).pluck(:item_id)
       where(id: ids, site: site)
     end
 
     def self.pages_in_collections_and_container_type(site, container_type)
-      ids = GobiertoCommon::CollectionItem.includes(:collection).where("collections.item_type = 'GobiertoCms::New' AND collection_items.item_type = ? AND collection_items.container_type = ?", self.name, container_type).pluck(:item_id)
+      ids = GobiertoCommon::CollectionItem.where(item_type: %W(GobiertoCms::News GobiertoCms::Page), container_type: container_type).pluck(:item_id)
       where(id: ids, site: site)
     end
 
     def self.pages_in_collections_and_container(site, container)
-      ids = GobiertoCommon::CollectionItem.includes(:collection).where("collections.item_type = 'GobiertoCms::New' AND collection_items.item_type = ? AND collection_items.container_type = ? AND collection_items.container_id = ?", self.name, container.class, container.id).pluck(:item_id)
+      ids = GobiertoCommon::CollectionItem.where(item_type: %W(GobiertoCms::News GobiertoCms::Page), container_type: container_type, container_id: container.id).pluck(:item_id)
       where(id: ids, site: site)
     end
 

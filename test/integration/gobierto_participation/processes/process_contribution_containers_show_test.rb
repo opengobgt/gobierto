@@ -12,20 +12,8 @@ module GobiertoParticipation
       @user ||= users(:peter)
     end
 
-    def process
-      @process ||= gobierto_participation_processes(:sport_city_process)
-    end
-
-    def processes
-      @processes ||= site.processes.process.open
-    end
-
     def process_path(process)
       gobierto_participation_process_path(process.slug)
-    end
-
-    def contribution_container
-      @contribution_container ||= gobierto_participation_contribution_containers(:children_contributions)
     end
 
     def container_path
@@ -174,7 +162,7 @@ module GobiertoParticipation
             assert has_content? "Carril bici para que los niños puedan llegar al parque desde cualquier punto de Barajas."
 
             within "div.comments_container" do
-              contribution_comments.each do |_comment|
+              contribution_comments.each do |comment|
                 assert has_selector?("div.comment div")
               end
             end

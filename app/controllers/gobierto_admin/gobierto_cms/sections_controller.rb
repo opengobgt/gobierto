@@ -7,6 +7,16 @@ module GobiertoAdmin
         @sections = current_site.sections
 
         @section_form = SectionForm.new(site_id: current_site.id)
+
+        respond_to do |format|
+          format.html
+          format.js
+          format.json do
+            render(
+              json: { sections: @sections.map{ |si| default_serializer.new(si) }}
+            )
+          end
+        end
       end
 
       def show
@@ -43,10 +53,12 @@ module GobiertoAdmin
         if @section_form.save
           track_create_activity
 
-          redirect_to(
-            admin_cms_section_path(@section_form.section),
-            notice: t(".success_html", link: "gobierto_participation_section_url(@section_form.section.slug, host: current_site.domain)")
-          )
+          unless params[:remote] == "true"
+            redirect_to(
+              admin_cms_section_path(@section_form.section),
+              notice: t(".success_html", link: "gobierto_participation_section_url(@section_form.section.slug, host: current_site.domain)")
+            )
+          end
         else
           render(:new_modal, layout: false) && return if request.xhr?
           render :new
@@ -99,6 +111,10 @@ module GobiertoAdmin
 
       def find_section
         current_site.sections.find(params[:id])
+      end
+
+      def default_serializer
+        ::GobiertoAdmin::GobiertoCms::SectionSerializer
       end
     end
   end

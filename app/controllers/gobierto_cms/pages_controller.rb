@@ -7,11 +7,19 @@ module GobiertoCms
     before_action :find_page_by_id_and_redirect
 
     def show
-      @process = find_process if params[:process]
+      @section = find_section if params[:slug_section]
       @page = find_page
+      @first_page_in_section = find_first_page_in_section if params[:slug_section]
+      @process = find_process if params[:process]
       @groups = current_site.processes.group_process
-      @collection = @page.collection
-      @pages = ::GobiertoCms::Page.where(id: @collection.pages_in_collection)
+
+      if @page
+        @section_item = find_section_item if params[:slug_section]
+        @collection = @page.collection
+        @pages = ::GobiertoCms::Page.where(id: @collection.pages_in_collection).active
+      else
+        redirect_to gobierto_cms_path(@first_page_in_section.slug, slug_section: @section.slug)
+      end
     end
 
     def index
@@ -42,10 +50,27 @@ module GobiertoCms
 
     def find_issue_news
       GobiertoParticipation::Process.find_by(issue: @issue).extend_news
+
+    def find_section
+      current_site.sections.find_by!(slug: params[:slug_section])
+    end
+
+    def find_section_item
+      ::GobiertoCms::SectionItem.find_by!(item: @page, section: @section)
+    end
+
+    def find_first_page_in_section
+      ::GobiertoCms::Page.first_page_in_section(@section)
+    end
+
+    def find_process_news
+      @process.news.sort_by_updated_at(5)
     end
 
     def find_page
-      pages_scope.find_by!(slug: params[:id])
+      if params[:id]
+        pages_scope.find_by!(slug: params[:id])
+      end
     end
 
     def pages_scope

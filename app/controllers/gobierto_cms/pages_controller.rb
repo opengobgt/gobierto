@@ -50,6 +50,7 @@ module GobiertoCms
 
     def find_issue_news
       GobiertoParticipation::Process.find_by(issue: @issue).extend_news
+    end
 
     def find_section
       current_site.sections.find_by!(slug: params[:slug_section])

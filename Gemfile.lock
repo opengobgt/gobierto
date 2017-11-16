@@ -141,7 +141,7 @@ GEM
     elasticsearch-transport (6.0.0)
       faraday
       multi_json
-    erubi (1.6.1)
+    erubi (1.7.0)
     exchanger (0.2.1)
       activesupport (>= 2.2.2)
       httpclient (>= 2.1.5.2)

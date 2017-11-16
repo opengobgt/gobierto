@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'support/calendar_integration_helpers'
-require 'support/concerns/gobierto_admin/authorizable_resource_test_module'
+require "test_helper"
+require "support/calendar_integration_helpers"
+require "support/concerns/gobierto_admin/authorizable_resource_test_module"
 
 module GobiertoAdmin
   module GobiertoPeople

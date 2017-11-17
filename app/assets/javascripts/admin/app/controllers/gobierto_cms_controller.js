@@ -5,7 +5,8 @@ this.GobiertoAdmin.GobiertoCmsController = (function() {
     _sections(sectionId, parentId, sectionItemId);
 
     if(sectionId != "null") {
-      $('.open_level_1').trigger('click');
+      $("#permission_1").prop("checked", true)
+      $('.open_level_1').trigger('change');
       $('#page_section').val(sectionId);
     }
   };
@@ -23,26 +24,34 @@ this.GobiertoAdmin.GobiertoCmsController = (function() {
     var $section = $('#page_section');
     var $parent = $('#page_parent');
 
-    $('.open_level_1').on('click', function(e){
+    $('.open_level_1').on('change', function(e){
       e.preventDefault();
-      if(sectionId != "null") {
-        getSections(sectionId)
-        $level1.show();
-        $level2.show();
-        populateParent(sectionId, parentId, sectionItemId);
 
-      } else {
-        // Sections
-        $level1.show();
-        getSections(sectionId)
-        // parent
-        if($('#page_section').val() == "") {
-          $level2.hide();
-        } else {
-          $parent.empty();
+      if($("#permission_1").prop('checked'))
+        if(sectionId != "null") {
+          getSections(sectionId)
+          $level1.show();
           $level2.show();
           populateParent(sectionId, parentId, sectionItemId);
+
+        } else {
+          // Sections
+          $level1.show();
+          getSections(sectionId)
+          // parent
+          if($section.val() == "") {
+            $level2.hide();
+          } else {
+            $parent.empty();
+            $level2.show();
+            populateParent(sectionId, parentId, sectionItemId);
+          }
         }
+      else {
+        $section.val("");
+        $level1.hide();
+        $level2.hide();
+        $parent.empty();
       }
     });
 
@@ -68,6 +77,11 @@ this.GobiertoAdmin.GobiertoCmsController = (function() {
               data: {
                 'globalized-form-container': 'true'
               }
+            }
+          },
+          callbacks: {
+            ajaxContentAdded: function() {
+              window.GobiertoAdmin.globalized_forms_component.handleGlobalizedForm();
             }
           }
         });
@@ -99,7 +113,7 @@ this.GobiertoAdmin.GobiertoCmsController = (function() {
   }
 
   function appendSections(sections, sectionSelected) {
-    var $section = $('#page_section')
+    var $section = $('#page_section');
 
     $section.empty();
     numOptions = sections.length;

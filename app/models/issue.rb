@@ -26,7 +26,7 @@ class Issue < ApplicationRecord
   end
 
   def extend_news
-    news = self.news_in_collections.sort_by_updated_at(5)
+    news = self.news_in_collections.sort_by_updated_at.limit(5)
     processes_id = processes_related.map(&:id)
     ids = GobiertoCommon::CollectionItem.where(collection: processes_id).map(&:item_id)
     if ids
@@ -38,7 +38,7 @@ class Issue < ApplicationRecord
   end
 
   def extend_events
-    events = self.events_in_collections.sort_by_updated_at(5)
+    events = self.events_in_collections.sort_by_updated_at.limit(5)
     processes_id = processes_related.map(&:id)
     ids = GobiertoCommon::CollectionItem.where(collection: processes_id).map(&:item_id)
     if ids
@@ -50,7 +50,7 @@ class Issue < ApplicationRecord
   end
 
   def extend_attachments
-    attachments = self.attachments_in_collections.sort_by_updated_at(5)
+    attachments = self.attachments_in_collections.sort_by_updated_at.limit(5)
     processes_id = processes_related.map(&:id)
     ids = GobiertoCommon::CollectionItem.where(collection: processes_id).map(&:item_id)
     if ids

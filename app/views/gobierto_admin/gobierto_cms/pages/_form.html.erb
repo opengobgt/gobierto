@@ -94,6 +94,7 @@
         status: false
       });
 
+      $el.data({editor: simplemde});
       var lang = simplemde.element.attributes.lang.value;
       simplemde.codemirror.on("change", function(){
         $('#body_translations_' + lang).val(simplemde.markdown(simplemde.value()))

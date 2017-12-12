@@ -26,6 +26,7 @@ Subscribers::GobiertoParticipationContributionContainerActivity.attach_to("activ
 Subscribers::IssueActivity.attach_to('activities/issues')
 Subscribers::UserActivity.attach_to("activities/users")
 Subscribers::SiteActivity.attach_to("activities/sites")
+Subscribers::AdminGobiertoCalendarsActivity.attach_to("activities/admin_gobierto_calendars")
 
 # Custom subscribers
 ActiveSupport::Notifications.subscribe(/trackable/) do |*args|

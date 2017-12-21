@@ -63,6 +63,17 @@ module GobiertoAdmin
         end
       end
 
+      def update_current_stage
+        stages = ::GobiertoParticipation::Process.find(params[:process_id]).stages
+        stages.update_all(active: false)
+        active_stage = ::GobiertoParticipation::ProcessStage.find(params[:active_stage_id])
+        active_stage.update(active: true)
+
+        respond_to do |format|
+          format.js { render layout: false }
+        end
+      end
+
       private
 
       def find_process
@@ -95,17 +106,7 @@ module GobiertoAdmin
           :has_duration,
           title_translations: [*I18n.available_locales],
           body_translations:  [*I18n.available_locales],
-          information_text_translations: [*I18n.available_locales],
-          stages_attributes: [
-            :stage_type,
-            :slug,
-            :starts,
-            :ends,
-            :active,
-            title_translations: [*I18n.available_locales],
-            description_translations: [*I18n.available_locales],
-            cta_text_translations: [*I18n.available_locales]
-          ]
+          information_text_translations: [*I18n.available_locales]
         )
       end
 

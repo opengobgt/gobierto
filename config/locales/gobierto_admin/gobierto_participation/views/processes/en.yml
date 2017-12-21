@@ -66,15 +66,11 @@ en:
           index:
             configuration: Configuration
         process_stages:
-          active: Active
-          cancel: Cancel
-          edit: Edit
-          edit_stage: Edit stage
-          placeholders:
-            body: ex. In this stage we intend ...
-            cta_text: ex. Add your idea
-            title: ex. Main stage
-          save: Save
+          add_new_phase: Add new phase
+          draft: Draft
+          drag_to_sort: Drag to sort
+          manage: Manage
+          published: Published
           stages_and_tools: Stages and tools
         update:
           success_html: Process was successfully updated. <a href="%{link}">View process</a>.

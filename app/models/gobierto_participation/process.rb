@@ -23,8 +23,8 @@ module GobiertoParticipation
     belongs_to :site
     belongs_to :issue
     belongs_to :scope, class_name: 'GobiertoCommon::Scope'
-    has_many :stages, -> { sorted }, dependent: :destroy, class_name: 'GobiertoParticipation::ProcessStage', autosave: true
-    has_many :active_stages, -> { active.sorted }, class_name: 'GobiertoParticipation::ProcessStage'
+    has_many :stages, -> { sorted }, dependent: :delete_all, class_name: 'GobiertoParticipation::ProcessStage', autosave: true
+    has_many :published_stages, -> { published.sorted }, class_name: 'GobiertoParticipation::ProcessStage'
     has_many :polls
     has_many :contribution_containers, dependent: :destroy, class_name: "GobiertoParticipation::ContributionContainer"
 
@@ -33,11 +33,8 @@ module GobiertoParticipation
 
     validates :site, :title, presence: true
     validates :slug, uniqueness: { scope: :site }
-    validates_associated :stages, message: I18n.t('activerecord.messages.gobierto_participation/process.are_not_valid')
 
     scope :sorted, -> { order(id: :desc) }
-
-    accepts_nested_attributes_for :stages
 
     after_create :create_collections
 
@@ -101,15 +98,20 @@ module GobiertoParticipation
     end
 
     def current_stage
-      active_stages.open.order(ends: :asc).last
+      # published_stages.open.order(ends: :asc).last
+      published_stages.find_by(active: true)
     end
 
     def next_stage
-      active_stages.upcoming.order(starts: :asc).first
+      if published_stages.upcoming
+        published_stages.upcoming.order(starts: :asc).first
+      else
+        GobiertoParticipation::ProcessStage.none
+      end
     end
 
     def showcase_stage
-      current_stage || next_stage ||  active_stages.order(ends: :asc).last || active_stages.last
+      current_stage || next_stage || published_stages.order(ends: :asc).last || published_stages.last
     end
 
     def open?

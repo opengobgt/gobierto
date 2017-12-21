@@ -66,15 +66,11 @@ es:
           index:
             configuration: Configuración
         process_stages:
-          active: Activa
-          cancel: Cancelar
-          edit: Editar
-          edit_stage: Editar fase
-          placeholders:
-            body: ej. En esta fase se pretende...
-            cta_text: ej. Aportar idea
-            title: ej. Fase principal
-          save: Guardar
+          add_new_phase: Añadir nueva fase
+          draft: Borrador
+          drag_to_sort: Arrastra para ordenar
+          manage: Gestionar
+          published: Publicada
           stages_and_tools: Fases y herramientas
         update:
           success_html: Proceso actualizado correctamente. <a href="%{link}">Ver proceso</a>.

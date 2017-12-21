@@ -36,7 +36,8 @@ module GobiertoAdmin
       :privacy_page_id,
       :populate_data_api_token,
       :home_page,
-      :home_page_item_id
+      :home_page_item_id,
+      :auth_modules
     )
 
     attr_reader :logo_url
@@ -65,6 +66,10 @@ module GobiertoAdmin
 
     def site_modules
       @site_modules ||= site.configuration.modules
+    end
+
+    def auth_modules
+      @auth_modules = (@auth_modules.present?) ? @auth_modules & AUTH_MODULES.map(&:name) : site.configuration.auth_modules
     end
 
     def head_markup
@@ -167,6 +172,7 @@ module GobiertoAdmin
         site_attributes.configuration.available_locales = (available_locales.select{ |l| l.present? } + [default_locale]).uniq
         site_attributes.configuration.privacy_page_id = privacy_page_id
         site_attributes.configuration.populate_data_api_token = populate_data_api_token
+        site_attributes.configuration.auth_modules = auth_modules
       end
 
       if @site.valid?

@@ -15,7 +15,8 @@ class SiteConfiguration
     :privacy_page_id,
     :populate_data_api_token,
     :home_page,
-    :home_page_item_id
+    :home_page_item_id,
+    :auth_modules
   ].freeze
 
   DEFAULT_LOGO_PATH = "sites/logo-default.png".freeze
@@ -38,6 +39,16 @@ class SiteConfiguration
     return [] unless @modules.present?
 
     @modules.select { |site_module| SITE_MODULES.include?(site_module) }
+  end
+
+  def auth_modules
+    return DEFAULT_MISSING_MODULES.map(&:name) if @auth_modules.nil?
+
+    @auth_modules & AUTH_MODULES.map(&:name)
+  end
+
+  def auth_modules_data
+    AUTH_MODULES.select { |mod| auth_modules.include?(mod.name) }
   end
 
   def logo_with_fallback
